@@ -37,9 +37,38 @@ const product: IProduct = {
 export default function MainPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const { quantity, setQuantity } = useOutletContext<OutletContext>();
-  const { addedProduct, setAddedProduct } = useOutletContext<OutletContext>();
+  const { setAddedProduct } = useOutletContext<OutletContext>();
   const [displayAdded, setDisplayAdded] = useState<boolean>(false);
   const { displayCart, setDisplayCart } = useOutletContext<OutletContext>();
+  const [displayDesktopProduct, setDisplayDesktopProduct] = useState<string>(
+    "/images/image-product-1.jpg"
+  );
+  const [displayImages, setDisplayImages] = useState([
+    {
+      id: 1,
+      main: "/images/image-product-1.jpg",
+      thumbnail: "/images/image-product-1-thumbnail.jpg",
+      active: true,
+    },
+    {
+      id: 2,
+      main: "/images/image-product-2.jpg",
+      thumbnail: "/images/image-product-2-thumbnail.jpg",
+      active: false,
+    },
+    {
+      id: 3,
+      main: "/images/image-product-3.jpg",
+      thumbnail: "/images/image-product-3-thumbnail.jpg",
+      active: false,
+    },
+    {
+      id: 4,
+      main: "/images/image-product-4.jpg",
+      thumbnail: "/images/image-product-4-thumbnail.jpg",
+      active: false,
+    },
+  ]);
 
   const handleMinusQuantity = () => {
     if (quantity !== 0) {
@@ -75,7 +104,19 @@ export default function MainPage() {
     }, 700);
   };
 
-  console.log(addedProduct);
+  const handleThumbnail = (id: number) => {
+    setDisplayImages((prevImages) =>
+      prevImages.map((image) =>
+        image.id === id
+          ? { ...image, active: true }
+          : { ...image, active: false }
+      )
+    );
+    const clickedImage = displayImages.find((image) => image.id === id);
+    if (clickedImage) {
+      setDisplayDesktopProduct(clickedImage.main);
+    }
+  };
 
   return (
     <main
@@ -103,6 +144,31 @@ export default function MainPage() {
           <img src="/images/icon-next.svg" alt="" />
         </ArrowButton>
       </SliderContainer>
+      <DesktopImages>
+        <ProductImageDesktop src={displayDesktopProduct} alt="Product image" />
+        <ul style={{ display: "flex", justifyContent: "space-between" }}>
+          {displayImages.map((image) => {
+            return (
+              <DesktopLi
+                key={image.id}
+                style={{
+                  all: "unset",
+                  transition: "0.2s",
+                  borderColor: image.active ? "#FF7E1B" : "",
+                }}>
+                <ThumbnailImg
+                  style={{
+                    opacity: image.active ? "0.3" : "",
+                  }}
+                  onClick={() => handleThumbnail(image.id)}
+                  src={image.thumbnail}
+                />
+                ;
+              </DesktopLi>
+            );
+          })}
+        </ul>
+      </DesktopImages>
       <LowerSection>
         <TextDiv>
           <CompanyName>{product.companyName}</CompanyName>
@@ -116,12 +182,14 @@ export default function MainPage() {
             <OldPrice>${product.oldPrice}</OldPrice>
           </PriceWrap>
         </TextDiv>
-        <Quantity>
-          <Amount>{quantity}</Amount>
-          <Minus onClick={handleMinusQuantity} src={MinusIcon} />
-          <Plus onClick={() => setQuantity(quantity + 1)} src={PlusIcon} />
-        </Quantity>
-        <AddButton onClick={handleAddProduct}>Add to cart</AddButton>
+        <div className="add-wrap">
+          <Quantity>
+            <Amount>{quantity}</Amount>
+            <Minus onClick={handleMinusQuantity} src={MinusIcon} />
+            <Plus onClick={() => setQuantity(quantity + 1)} src={PlusIcon} />
+          </Quantity>
+          <AddButton onClick={handleAddProduct}>Add to cart</AddButton>
+        </div>
       </LowerSection>
       {displayAdded && (
         <AddScreen>
@@ -133,6 +201,39 @@ export default function MainPage() {
 }
 
 // Styled Components
+
+const DesktopLi = styled.li`
+  border: 2px solid rebeccapurple;
+`;
+
+const ProductImageDesktop = styled.img`
+  width: 44.5rem;
+  border-radius: 2rem;
+`;
+
+const DesktopImages = styled.div`
+  display: none;
+
+  @media only screen and (min-width: 90rem) {
+    display: flex;
+    flex-direction: column;
+    gap: 3.2rem;
+  }
+`;
+
+const ThumbnailImg = styled.img`
+  @media only screen and (min-width: 90rem) {
+    width: 8.8rem;
+    border-radius: 1.3rem;
+    cursor: pointer;
+
+    &:hover {
+      opacity: 0.5;
+      transition: 0.2s;
+    }
+  }
+`;
+
 const SliderContainer = styled.div`
   display: flex;
   align-items: center;
@@ -142,6 +243,10 @@ const SliderContainer = styled.div`
   max-width: 40rem;
   margin: 0 auto;
   overflow: hidden;
+
+  @media only screen and (min-width: 90rem) {
+    display: none;
+  }
 `;
 
 const ImageWrapper = styled.div`
@@ -185,6 +290,10 @@ const ArrowButton = styled.button`
   &:last-of-type {
     right: 0.5rem;
   }
+
+  @media only screen and (min-width: 90rem) {
+    display: none;
+  }
 `;
 
 const LowerSection = styled.section`
@@ -192,6 +301,10 @@ const LowerSection = styled.section`
   display: flex;
   flex-direction: column;
   gap: 2.4rem;
+
+  @media only screen and (min-width: 90rem) {
+    max-width: 55rem;
+  }
 `;
 
 const TextDiv = styled.div`
@@ -210,6 +323,10 @@ const CompanyName = styled.h2`
 const OfferTitle = styled.h1`
   font-size: 2.8rem;
   color: #1d2026;
+
+  @media only screen and (min-width: 90rem) {
+    font-size: 4.4rem;
+  }
 `;
 
 const TextContent = styled.p`
@@ -222,6 +339,12 @@ const PriceWrap = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  @media only screen and (min-width: 90rem) {
+    flex-direction: column;
+    align-items: start;
+    gap: 1.3rem;
+  }
 `;
 
 const Price = styled.span`
@@ -292,6 +415,11 @@ const AddButton = styled.button`
   font-size: 1.6rem;
   font-weight: 700;
   cursor: pointer;
+
+  &:hover {
+    background-color: #ffab6a;
+    transition: 0.2s;
+  }
 `;
 
 const bubbleAnimation = keyframes`
@@ -337,4 +465,11 @@ const AddScreen = styled.div`
   font-size: 1.8rem;
   animation: ${bubbleAnimation} 0.7s ease-in-out;
   z-index: 1000;
+  box-shadow: 0px 10px 15px #00000035;
+
+  @media only screen and (min-width: 90rem) {
+    max-width: 50rem;
+    top: unset;
+    bottom: 10%;
+  }
 `;

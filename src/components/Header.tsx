@@ -26,6 +26,8 @@ export default function Header({
 }: HeaderProps) {
   const [displayMenu, setDisplayMenu] = useState<boolean>(false);
   const [isClosing, setIsClosing] = useState<boolean>(false);
+  const [activeNav, setActiveNav] = useState<string>("");
+  const [displayThankYou, setDisplayThankYou] = useState<boolean>(false);
 
   const handleOpenMenu = () => {
     setDisplayMenu(true);
@@ -43,13 +45,50 @@ export default function Header({
     setDisplayCart(!displayCart);
   };
 
+  const handleCheckOut = () => {
+    setDisplayCart(false);
+    setAddedProduct(null);
+    setDisplayThankYou(true);
+
+    setTimeout(() => {
+      setDisplayThankYou(false);
+    }, 700);
+  };
+
   return (
     <>
       <header>
         <MenuWrap>
           <Menu onClick={handleOpenMenu} src={MenuIcon} />
           <Logo src={LogoIcon} />
+          <DesktopNav>
+            <ul className="desktop-ul">
+              {navigation.map((category) => (
+                <li
+                  key={category}
+                  style={{
+                    all: "unset",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => setActiveNav(category)}>
+                  <Link
+                    style={{
+                      all: "unset",
+                      fontSize: "1.5rem",
+                      paddingBottom: "3.8rem",
+                      color: activeNav === category ? "black" : "#69707D",
+                      borderBottom:
+                        activeNav === category ? "4px solid #FF7E1B" : "",
+                    }}
+                    to={category}>
+                    {category}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </DesktopNav>
         </MenuWrap>
+
         <CartAndProfile>
           <CartDiv>
             {addedProduct && <CartQuantity>{quantity}</CartQuantity>}
@@ -99,12 +138,15 @@ export default function Header({
                     <img src="/images/icon-delete.svg" alt="" />
                   </button>
                 </ProductInfo>
-                <CheckoutButton>Checkout</CheckoutButton>
+                <CheckoutButton onClick={handleCheckOut}>
+                  Checkout
+                </CheckoutButton>
               </>
             )}
           </InnerCart>
         </CartSection>
       )}
+      {displayThankYou && <ThankYou>Thank you!</ThankYou>}
     </>
   );
 }
@@ -113,6 +155,18 @@ export default function Header({
 
 const Menu = styled.img`
   cursor: pointer;
+
+  @media only screen and (min-width: 90rem) {
+    display: none;
+  }
+`;
+
+const DesktopNav = styled.nav`
+  display: none;
+
+  @media only screen and (min-width: 90rem) {
+    display: block;
+  }
 `;
 
 const Logo = styled.img``;
@@ -121,18 +175,41 @@ const MenuWrap = styled.div`
   display: flex;
   align-items: end;
   gap: 1.6rem;
+
+  @media only screen and (min-width: 90rem) {
+    gap: 5.6rem;
+  }
 `;
 
 const CartAndProfile = styled.div`
   display: flex;
   gap: 2.2rem;
   align-items: end;
+
+  @media only screen and (min-width: 90rem) {
+    gap: 4.6rem;
+    align-items: center;
+  }
 `;
 
-const Cart = styled.img``;
+const Cart = styled.img`
+  cursor: pointer;
+`;
 
 const Avatar = styled.img`
   width: 2.4rem;
+  cursor: pointer;
+  border: 3px solid transparent;
+  border-radius: 50%;
+
+  &:hover {
+    border-color: #ff7e1b;
+    transition: 0.2s;
+  }
+
+  @media only screen and (min-width: 90rem) {
+    width: 5rem;
+  }
 `;
 
 // Keyframes for Animations
@@ -198,6 +275,31 @@ const bubbleAnimation = keyframes`
   }
 `;
 
+const bubbleAnimationThankYou = keyframes`
+  0% {
+    transform: translateX(-50%) scale(0);
+    opacity: 0;
+  }
+  30% {
+    transform: translateX(-50%) scale(1.1);
+  }
+  50% {
+    transform: translateX(-50%) scale(0.8);
+    opacity: 1;
+  }
+  80% {
+    transform: translateX(-50%) scale(0.9);
+    opacity: 1;
+  }
+  90%{
+    transform: translateX(-50%) scale(0.8);
+  }
+  100% {
+    transform: translateX(-50%) scale(0);
+    opacity: 1;
+  }
+`;
+
 const CartSection = styled.section`
   position: fixed;
   background-color: white;
@@ -209,6 +311,13 @@ const CartSection = styled.section`
   transform: translateX(-50%);
   box-shadow: 0px 10px 15px #0000006f;
   animation: ${bubbleAnimation} 0.7s ease-in-out;
+  max-width: 38rem;
+
+  @media only screen and (min-width: 90rem) {
+    right: 0.9rem;
+    top: 9.4rem;
+    left: unset;
+  }
 `;
 
 const CartTitleDiv = styled.div`
@@ -265,6 +374,12 @@ const CheckoutButton = styled.button`
   border-radius: 0.9rem;
   background-color: #ff7e1b;
   border: none;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #ffab6a;
+    transition: 0.2s;
+  }
 `;
 
 const CartDiv = styled.div`
@@ -281,4 +396,33 @@ const CartQuantity = styled.span`
   position: absolute;
   right: -0.6rem;
   top: -0.6rem;
+`;
+
+const ThankYou = styled.div`
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 0.7rem;
+  background-color: #fff;
+  padding: 20px;
+  width: 60%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  font-size: 1.8rem;
+  animation: ${bubbleAnimationThankYou} 0.7s ease-in-out;
+  z-index: 1000;
+  box-shadow: 0px 10px 15px #00000035;
+  font-weight: 700;
+
+  @media only screen and (min-width: 90rem) {
+    max-width: 50rem;
+    top: unset;
+    bottom: 10%;
+    font-size: 2.2rem;
+  }
 `;

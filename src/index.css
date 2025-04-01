@@ -34,7 +34,40 @@ header {
   font-weight: 700;
 }
 
+.desktop-ul {
+  display: flex;
+  gap: 3.2rem;
+}
+
 main {
   position: relative;
   padding-top: 6rem;
+  max-width: 70rem;
+  margin: auto;
+}
+
+@media only screen and (min-width: 90rem) {
+  body {
+    padding: 2.8rem 16.5rem 13.2rem;
+  }
+
+  header {
+    align-items: center;
+    border-bottom: 1px solid #e4e9f2;
+    position: unset;
+  }
+
+  main {
+    display: flex;
+    gap: 12.5rem;
+    width: 100%;
+    max-width: unset;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .add-wrap {
+    display: flex;
+    gap: 1.6rem;
+  }
 }
