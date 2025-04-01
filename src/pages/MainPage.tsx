@@ -415,10 +415,15 @@ const AddButton = styled.button`
   font-size: 1.6rem;
   font-weight: 700;
   cursor: pointer;
+  box-shadow: 0px 10px 15px #ff7e1b70;
 
   &:hover {
     background-color: #ffab6a;
     transition: 0.2s;
+  }
+
+  @media only screen and (min-width: 90rem) {
+    box-shadow: unset;
   }
 `;
 

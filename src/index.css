@@ -39,6 +39,12 @@ header {
   gap: 3.2rem;
 }
 
+.add-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
 main {
   position: relative;
   padding-top: 6rem;
@@ -69,5 +75,6 @@ main {
   .add-wrap {
     display: flex;
     gap: 1.6rem;
+    flex-direction: row;
   }
 }
