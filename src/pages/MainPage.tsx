@@ -99,23 +99,18 @@ export default function MainPage() {
         ...prev!,
         quantity: prev!.quantity + quantity,
       }));
-
-      setDisplayAdded(true);
-      setTimeout(() => {
-        setDisplayAdded(false);
-      }, 700);
     } else {
       setAddedProduct({
         offerTitle: product.offerTitle,
         price: product.price,
         quantity: quantity,
       });
-
-      setDisplayAdded(true);
-      setTimeout(() => {
-        setDisplayAdded(false);
-      }, 700);
     }
+
+    setDisplayAdded(true);
+    setTimeout(() => {
+      setDisplayAdded(false);
+    }, 700);
   };
 
   const handleThumbnail = (id: number) => {
