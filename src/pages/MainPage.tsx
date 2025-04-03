@@ -37,7 +37,7 @@ const product: IProduct = {
 export default function MainPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const { quantity, setQuantity } = useOutletContext<OutletContext>();
-  const { setAddedProduct } = useOutletContext<OutletContext>();
+  const { addedProduct, setAddedProduct } = useOutletContext<OutletContext>();
   const [displayAdded, setDisplayAdded] = useState<boolean>(false);
   const { displayCart, setDisplayCart } = useOutletContext<OutletContext>();
   const [displayDesktopProduct, setDisplayDesktopProduct] = useState<string>(
@@ -89,19 +89,33 @@ export default function MainPage() {
   };
 
   const handleAddProduct = () => {
-    if (quantity === 0) {
+    if (quantity === 0 && !addedProduct) {
       setAddedProduct(null);
       return;
     }
 
-    setAddedProduct({
-      offerTitle: product.offerTitle,
-      price: product.price,
-    });
-    setDisplayAdded(true);
-    setTimeout(() => {
-      setDisplayAdded(false);
-    }, 700);
+    if (addedProduct) {
+      setAddedProduct((prev) => ({
+        ...prev!,
+        quantity: prev!.quantity + quantity,
+      }));
+
+      setDisplayAdded(true);
+      setTimeout(() => {
+        setDisplayAdded(false);
+      }, 700);
+    } else {
+      setAddedProduct({
+        offerTitle: product.offerTitle,
+        price: product.price,
+        quantity: quantity,
+      });
+
+      setDisplayAdded(true);
+      setTimeout(() => {
+        setDisplayAdded(false);
+      }, 700);
+    }
   };
 
   const handleThumbnail = (id: number) => {

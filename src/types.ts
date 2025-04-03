@@ -16,6 +16,7 @@ export interface MainPageProps {
 export type AddedProduct = {
   offerTitle: string;
   price: number;
+  quantity: number;
 } | null;
 
 export interface HeaderProps {

@@ -18,7 +18,6 @@ const navigation: string[] = [
 ];
 
 export default function Header({
-  quantity,
   addedProduct,
   displayCart,
   setDisplayCart,
@@ -91,7 +90,9 @@ export default function Header({
 
         <CartAndProfile>
           <CartDiv>
-            {addedProduct && <CartQuantity>{quantity}</CartQuantity>}
+            {addedProduct && (
+              <CartQuantity>{addedProduct.quantity}</CartQuantity>
+            )}
             <Cart onClick={handleDisplayCart} src={CartIcon} />
           </CartDiv>
           <Avatar src={AvatarImg} />
@@ -129,8 +130,9 @@ export default function Header({
                 <ProductInfo>
                   <CartImg src={ProductThumbnail} />
                   <ProductInfoText>
-                    {addedProduct.offerTitle} ${addedProduct.price} x {quantity}{" "}
-                    <span>${addedProduct.price * quantity}</span>
+                    {addedProduct.offerTitle} ${addedProduct.price} x{" "}
+                    {addedProduct.quantity}{" "}
+                    <span>${addedProduct.price * addedProduct.quantity}</span>
                   </ProductInfoText>
                   <button
                     onClick={() => setAddedProduct(null)}
