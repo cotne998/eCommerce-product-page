@@ -1,17 +1,15 @@
 import { useState } from "react";
-import styled from "styled-components";
-import { IProduct } from "../types";
+import styled, { keyframes } from "styled-components";
+import { IProduct, AddedProduct } from "../types";
 import PlusIcon from "/images/icon-plus.svg";
 import MinusIcon from "/images/icon-minus.svg";
 import { useOutletContext } from "react-router-dom";
-import { AddedProduct } from "../types";
-import { keyframes } from "styled-components";
 
 interface OutletContext {
   quantity: number;
   setQuantity: React.Dispatch<React.SetStateAction<number>>;
-  addedProduct: AddedProduct;
-  setAddedProduct: React.Dispatch<React.SetStateAction<AddedProduct>>;
+  addedProduct: AddedProduct | null;
+  setAddedProduct: React.Dispatch<React.SetStateAction<AddedProduct | null>>;
   displayCart: boolean;
   setDisplayCart: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -40,7 +38,11 @@ export default function MainPage() {
   const { addedProduct, setAddedProduct } = useOutletContext<OutletContext>();
   const [displayAdded, setDisplayAdded] = useState<boolean>(false);
   const { displayCart, setDisplayCart } = useOutletContext<OutletContext>();
+  const [bigPictureMode, setBigPictureMode] = useState<boolean>(false);
   const [displayDesktopProduct, setDisplayDesktopProduct] = useState<string>(
+    "/images/image-product-1.jpg"
+  );
+  const [bigPictureImage, setBigPictureImage] = useState<string>(
     "/images/image-product-1.jpg"
   );
   const [displayImages, setDisplayImages] = useState([
@@ -127,6 +129,31 @@ export default function MainPage() {
     }
   };
 
+  const handleBigPictureThumbnail = (id: number) => {
+    const clickedImage = displayImages.find((image) => image.id === id);
+    if (clickedImage) {
+      setBigPictureImage(clickedImage.main);
+    }
+  };
+
+  const handleBigPicturePrev = () => {
+    const currentIndex = displayImages.findIndex(
+      (image) => image.main === bigPictureImage
+    );
+    const prevIndex =
+      currentIndex === 0 ? displayImages.length - 1 : currentIndex - 1;
+    setBigPictureImage(displayImages[prevIndex].main);
+  };
+
+  const handleBigPictureNext = () => {
+    const currentIndex = displayImages.findIndex(
+      (image) => image.main === bigPictureImage
+    );
+    const nextIndex =
+      currentIndex === displayImages.length - 1 ? 0 : currentIndex + 1;
+    setBigPictureImage(displayImages[nextIndex].main);
+  };
+
   return (
     <main
       onClick={() => {
@@ -136,7 +163,7 @@ export default function MainPage() {
       }}>
       <SliderContainer>
         <ArrowButton onClick={handlePrev}>
-          <img src="/images/icon-previous.svg" alt="" />
+          <img src="/images/icon-previous.svg" alt="Previous" />
         </ArrowButton>
         <ImageWrapper>
           <ImageTrack currentIndex={currentIndex}>
@@ -150,32 +177,36 @@ export default function MainPage() {
           </ImageTrack>
         </ImageWrapper>
         <ArrowButton onClick={handleNext}>
-          <img src="/images/icon-next.svg" alt="" />
+          <img src="/images/icon-next.svg" alt="Next" />
         </ArrowButton>
       </SliderContainer>
       <DesktopImages>
-        <ProductImageDesktop src={displayDesktopProduct} alt="Product image" />
+        <ProductImageDesktop
+          onClick={() => {
+            setBigPictureMode(true);
+            setBigPictureImage(displayDesktopProduct);
+          }}
+          src={displayDesktopProduct}
+          alt="Product image"
+        />
         <ul style={{ display: "flex", justifyContent: "space-between" }}>
-          {displayImages.map((image) => {
-            return (
-              <DesktopLi
-                key={image.id}
+          {displayImages.map((image) => (
+            <DesktopLi
+              key={image.id}
+              style={{
+                all: "unset",
+                transition: "0.2s",
+                borderColor: image.active ? "#FF7E1B" : "",
+              }}>
+              <ThumbnailImg
                 style={{
-                  all: "unset",
-                  transition: "0.2s",
-                  borderColor: image.active ? "#FF7E1B" : "",
-                }}>
-                <ThumbnailImg
-                  style={{
-                    opacity: image.active ? "0.3" : "",
-                  }}
-                  onClick={() => handleThumbnail(image.id)}
-                  src={image.thumbnail}
-                />
-                ;
-              </DesktopLi>
-            );
-          })}
+                  opacity: image.active ? "0.3" : "",
+                }}
+                onClick={() => handleThumbnail(image.id)}
+                src={image.thumbnail}
+              />
+            </DesktopLi>
+          ))}
         </ul>
       </DesktopImages>
       <LowerSection>
@@ -205,6 +236,83 @@ export default function MainPage() {
           <h2>Item added</h2>
         </AddScreen>
       )}
+
+      {bigPictureMode && (
+        <>
+          <Overlay onClick={() => setBigPictureMode(false)} />
+          <DesktopImages
+            style={{
+              zIndex: "10",
+              position: "absolute",
+              left: "50%",
+              transform: "translateX(-50%)",
+            }}>
+            <div style={{ position: "relative" }}>
+              <ProductImageDesktop
+                style={{ width: "55rem" }}
+                src={bigPictureImage}
+                alt="Product image"
+              />
+              <ArrowButton
+                style={{
+                  all: "unset",
+                  position: "absolute",
+                  left: "-2rem",
+                  top: "50%",
+                  backgroundColor: "#fff",
+                  borderRadius: "50%",
+                  width: "4rem",
+                  height: "4rem",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                }}
+                onClick={handleBigPicturePrev}>
+                <img src="/images/icon-previous.svg" alt="Previous" />
+              </ArrowButton>
+              <ArrowButton
+                style={{
+                  all: "unset",
+                  position: "absolute",
+                  right: "-2rem",
+                  top: "50%",
+                  backgroundColor: "#fff",
+                  borderRadius: "50%",
+                  width: "4rem",
+                  height: "4rem",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                }}
+                onClick={handleBigPictureNext}>
+                <img src="/images/icon-next.svg" alt="Next" />
+              </ArrowButton>
+            </div>
+            <ul style={{ display: "flex", justifyContent: "space-around" }}>
+              {displayImages.map((image) => (
+                <DesktopLi
+                  key={image.id}
+                  style={{
+                    all: "unset",
+                    transition: "0.2s",
+                    borderColor:
+                      image.main === bigPictureImage ? "#FF7E1B" : "",
+                  }}>
+                  <ThumbnailImg
+                    style={{
+                      opacity: image.main === bigPictureImage ? "0.3" : "",
+                    }}
+                    onClick={() => handleBigPictureThumbnail(image.id)}
+                    src={image.thumbnail}
+                  />
+                </DesktopLi>
+              ))}
+            </ul>
+          </DesktopImages>
+        </>
+      )}
     </main>
   );
 }
@@ -222,6 +330,7 @@ const ProductImageDesktop = styled.img`
 
 const DesktopImages = styled.div`
   display: none;
+  cursor: pointer;
 
   @media only screen and (min-width: 90rem) {
     display: flex;
@@ -486,4 +595,14 @@ const AddScreen = styled.div`
     top: unset;
     bottom: 10%;
   }
+`;
+
+const Overlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.747);
+  z-index: 10;
 `;
